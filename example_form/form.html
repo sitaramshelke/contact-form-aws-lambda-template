@@ -1,0 +1,77 @@
+<html>
+<title>Example Form</title>
+
+<body>
+    <div><b>Contact.</b></h1>
+        <p>Do you want us to style your home? Fill out the form and fill me in with the details :) We love meeting new
+            people!</p>
+        <form>
+            <!-- security field start-->
+            <div style="display:none;">
+                <label>Keep this field blank</label>
+                <input type="text" name="security" id="security" />
+            </div>
+            <!-- security field end -->
+            <div>
+                <label>Name</label>
+                <input type="text" name="name" required>
+            </div>
+            <div>
+                <label>Email</label>
+                <input type="text" name="reply_to" required>
+            </div>
+            <div>
+                <label>Message</label>
+                <input type="text" name="message" required>
+            </div>
+            <button type="button" onclick="sendContactRequest()">Send
+                Message</button>
+        </form>
+        <p id="js-form-response"></p>
+    </div>
+
+    <script>
+        function sendContactRequest() {
+            var form = document.querySelector('form');
+            var formResponse = document.querySelector('#js-form-response');
+            const data = {};
+
+            var LAMBDA_URL = "";
+            var myDomain = "your_website.domain";
+            var contactTo = "contact@your_website.domain";
+
+            const formElements = Array.from(form);
+            formElements.map(input => (data[input.name] = input.value));
+            data["contact_to"] = contactTo;
+            data["website"] = myDomain;
+
+            var xhr = new XMLHttpRequest();
+
+            //======= Replace the following string with the latest lambda url =========
+            xhr.open("POST", LAMBDA_URL, true);
+            // ========================================================================
+
+            xhr.setRequestHeader('Accept', 'application/json; charset=utf-8');
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+            // Check for bots, bots will fill all the fields
+            if (data['security'] == "") {
+                // Send the collected data as JSON
+                xhr.send(JSON.stringify(data));
+            }
+            // Callback function
+            xhr.onloadend = response => {
+                if (response.target.status === 200) {
+                    // The form submission was successful
+                    form.reset();
+                    formResponse.innerHTML = 'Thanks for the message. We’ll be in touch shortly.';
+                } else {
+                    // The form submission failed
+                    formResponse.innerHTML = 'Something went wrong';
+                }
+            };
+        };
+    </script>
+</body>
+
+</html>

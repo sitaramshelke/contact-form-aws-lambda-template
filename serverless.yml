@@ -1,0 +1,20 @@
+service: contact-form-mailer # NOTE: update this with your service name
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: us-west-2 # Update this if needed
+iamRoleStatements:
+  - Effect: "Allow"
+    Action:
+      - "ses.SendEmail"
+    Resource: ["*"]
+functions:
+  contactFormMailer:
+    handler: handler.contactFormMailer #NodeJS handler name
+    events:
+      - http:
+          path: contact-form-mailer #URL endpoint
+          method: post
+          cors:
+            origin: "*"
+            maxAge: 86400
